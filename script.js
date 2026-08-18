@@ -55,12 +55,13 @@ loginBtn.addEventListener('click', () => {
 });
 
 // --- NOTEPAD TABS & BADGES INFO LOGIC ---
+// Numbers removed!
 const badgeData = {
-    1: { title: "1. Starlight Novice", quote: "“Even the smallest spark can light up an endless abyss.” ✧" },
-    2: { title: "2. Cloud Hopper", quote: "“Keep looking up, the softest clouds are just ahead.” ☁️" },
-    3: { title: "3. Dream Wanderer", quote: "“Lost in a haze of plum and light blue memories.” 𓆩ꨄ︎𓆪" },
-    4: { title: "4. Astral Sprite", quote: "“Dancing between dimensions where gravity doesn't apply.” ✨" },
-    5: { title: "5. Celestial Queen", quote: "“The entire sky bows to your endless high score.” 👑" }
+    1: { title: "Starlight Novice", quote: "“Even the smallest spark can light up an endless abyss.” ✧" },
+    2: { title: "Cloud Hopper", quote: "“Keep looking up, the softest clouds are just ahead.” ☁️" },
+    3: { title: "Dream Wanderer", quote: "“Lost in a haze of plum and light blue memories.” 𓆩ꨄ︎𓆪" },
+    4: { title: "Astral Sprite", quote: "“Dancing between dimensions where gravity doesn't apply.” ✨" },
+    5: { title: "Celestial Queen", quote: "“The entire sky bows to your endless high score.” 👑" }
 };
 
 function switchTab(tabName) {
@@ -95,15 +96,16 @@ function loadBadgesToNotepad() {
         
         if (isUnlocked) {
             slot.addEventListener('click', () => {
-                showBadgeAlert(badgeData[i].title, badgeData[i].quote);
+                showBadgeAlert(badgeData[i].title, badgeData[i].quote, `ms${i}.png`);
             });
         }
         grid.appendChild(slot);
     }
 }
 
-// Custom Modal Controls
-function showBadgeAlert(title, quote) {
+// Custom Modal Controls (Now includes the image logic)
+function showBadgeAlert(title, quote, imgSrc) {
+    document.getElementById('badge-alert-img').src = imgSrc;
     document.getElementById('badge-alert-title').innerText = title;
     document.getElementById('badge-alert-quote').innerText = quote;
     document.getElementById('badge-alert-modal').classList.remove('hidden');
@@ -530,7 +532,6 @@ function updateGame() {
         }
     });
     
-    // Items and stars use standard styling to let CSS handle their floating/spinning animations!
     items.forEach(item => {
         if(item.element) {
             item.element.style.left = `${item.x}px`;
