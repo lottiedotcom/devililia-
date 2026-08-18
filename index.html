@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Jump Game OS</title>
+    <!-- Links the manifest for app downloading -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Login Screen -->
+    <div id="login-screen">
+        <div class="login-divider"></div>
+        <div class="login-box">
+            <img src="pfp.png" id="user-avatar" alt="Kittens Avatar" title="Click for password hint">
+            <div class="login-info">
+                <h2>Kitten (⁠◕⁠ᴗ⁠◕⁠✿⁠)</h2>
+                <p style="font-size: 11px; color: #ff6699; margin-bottom: 8px;">System Locked. Enter password.</p>
+                <div class="input-group">
+                    <input type="password" id="password-input" placeholder="Type your password">
+                    <button id="login-btn">➔</button>
+                </div>
+                <p id="login-error">Incorrect password.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Desktop Environment -->
+    <div id="desktop" class="hidden">
+        
+        <!-- DESKTOP ICONS -->
+        <div class="desktop-icons-container">
+            <div class="icon" onclick="openWindow('window-notepad')">
+                <img src="https://win98icons.alexmeub.com/icons/png/notepad-1.png" class="icon-img" alt="Notepad">
+                <span>notepad 🎀</span>
+            </div>
+
+            <div class="icon" onclick="openWindow('window-game')">
+                <img src="https://win98icons.alexmeub.com/icons/png/joystick-0.png" class="icon-img" alt="Mini Game">
+                <span>jump_game 🎮</span>
+            </div>
+        </div>
+
+        <!-- Taskbar -->
+        <div id="taskbar">
+            <div id="start-btn">
+                <img src="https://win98icons.alexmeub.com/icons/png/windows_slanted-1.png" alt="Start" id="start-logo">
+                <span>start</span>
+            </div>
+            <div id="clock">12:00 PM</div>
+        </div>
+
+        <!-- Start Menu -->
+        <div id="start-menu" class="hidden">
+            <div class="start-header">
+                <img src="pfp.png" alt="Kitten">
+                <span>Kitten (⁠ ⁠ꈍ⁠ᴗ⁠ꈍ⁠)</span>
+            </div>
+            <div class="start-body">
+                <div class="start-links">
+                    <a href="#" onclick="openWindow('window-game')">🎮 Play Game</a>
+                    <a href="#" onclick="openWindow('window-notepad')">🎀 Open Notepad</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- WINDOW: Interactive Notepad -->
+        <div class="window hidden" id="window-notepad">
+            <div class="title-bar drag-handle">
+                <span>untitled - notepad</span>
+                <button class="close-btn" onclick="closeWindow('window-notepad')">X</button>
+            </div>
+            <div class="window-content no-padding">
+                <textarea class="notepad-area" placeholder="Type here..."></textarea>
+            </div>
+        </div>
+
+        <!-- WINDOW: Vertical Bouncing Game -->
+        <div class="window hidden" id="window-game" style="width: 320px; height: 420px;">
+            <div class="title-bar drag-handle">
+                <span>jump_game.exe</span>
+                <button class="close-btn" onclick="closeWindow('window-game')">X</button>
+            </div>
+            <div class="window-content no-padding" style="position: relative; overflow: hidden; background: #fff0f5;">
+                <div id="game-container">
+                    <div id="game-ui">
+                        <div id="health-bar"></div>
+                        <div id="score-display">Score: 0</div>
+                    </div>
+                    
+                    <div id="start-overlay" class="hidden">Tap to Start!</div>
+                    
+                    <div id="items-container"></div>
+                    <div id="platforms-container"></div>
+                    <div id="game-player-el" class="game-player"></div>
+                    
+                    <div id="game-over-screen" class="hidden">
+                        <h2>Game Over</h2>
+                        <p id="game-over-msg">You fell into the abyss!</p>
+                        <p id="high-score-display" style="font-size: 14px; font-weight: bold; color: #ff99cc; margin-bottom: 15px;"></p>
+                        <button class="xp-button" onclick="restartGame()">Play Again</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Liminal Error Message -->
+        <div class="window hidden" id="error-message">
+            <div class="title-bar drag-handle">
+                <span>Alert</span>
+                <button class="close-btn" onclick="closeWindow('error-message')">X</button>
+            </div>
+            <div class="window-content center-content error-text">
+                <p id="error-text">You have been here before.</p>
+                <button class="xp-button" onclick="closeWindow('error-message')">OK</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Screensaver -->
+    <div id="screensaver" class="hidden">
+        <img src="sv.gif" id="bounce-logo" alt="screensaver">
+    </div>
+
+    <!-- Audio Files -->
+    <audio id="ui-click-sound" src="ui.mp3" preload="auto"></audio>
+    <audio id="game-bgm" src="gg.m4a" loop preload="auto"></audio>
+
+    <script src="script.js"></script>
+    
+    <!-- Registers the Service Worker -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+    </script>
+</body>
+</html>
