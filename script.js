@@ -256,13 +256,11 @@ let mouseX = 160;
 
 const outfitsList = ['gc.png', 'black.png', 'blue.png', 'pink.png'];
 
-// PRE-LOAD OUTFIT IMAGES TO PREVENT SEAMLESS FLASHING/LAG!
 outfitsList.forEach(src => {
     const img = new Image();
     img.src = src;
 });
 
-// HARDER MILESTONE SCORE REQUIREMENTS
 const milestones = [
     { score: 2500, id: 1, title: "Badge Unlocked: Starlight Novice!" },
     { score: 7500, id: 2, title: "Badge Unlocked: Cloud Hopper!" },
@@ -356,17 +354,19 @@ function updateGame() {
         }
 
         // --- PLATFORM COLLISION ---
-        let gameTime = Date.now() * 0.003; // Smooth time factor for floating motion
+        let gameTime = Date.now() * 0.002; 
         if (player.vy > 0) {
             let preciseCenter = player.x + (player.width / 2); 
             
             platforms.forEach(plat => {
-                // Smooth sinusoidal wave motion for pastel clouds gliding back and forth
+                // Smooth glide math for pastel clouds
                 if (plat.type === 'pastel') {
-                    plat.x = 60 + Math.sin(gameTime + plat.baseKey) * 60;
+                    plat.currentX = plat.x + Math.sin(gameTime + plat.baseKey) * 60;
+                } else {
+                    plat.currentX = plat.x;
                 }
 
-                if(preciseCenter > plat.x + 30 && preciseCenter < plat.x + 170 &&
+                if(preciseCenter > plat.currentX + 30 && preciseCenter < plat.currentX + 170 &&
                    player.y + player.height > plat.y + 10 && 
                    player.y + player.height < plat.y + 30 + player.vy) {
                     
@@ -378,7 +378,7 @@ function updateGame() {
             });
         }
         
-        // --- ITEM COLLISION (SUPER JUMP) ---
+        // --- ITEM COLLISION ---
         let itemGrabCenter = player.x + (player.width / 2);
         items.forEach(item => {
             if (item.element && 
@@ -393,7 +393,7 @@ function updateGame() {
             }
         });
 
-        // --- STAR COLLISION (OUTFIT CHANGE) ---
+        // --- STAR COLLISION ---
         stars.forEach(star => {
             if (star.element &&
                 itemGrabCenter > star.x - 30 && itemGrabCenter < star.x + 75 &&
@@ -409,7 +409,6 @@ function updateGame() {
             }
         });
 
-        // --- CHECK MILESTONES ---
         checkMilestones(score);
 
         // --- CAMERA SCROLLING ---
@@ -504,29 +503,26 @@ function updateGame() {
         }
     }
 
-    // Render DOM positions
+    // --- HARDWARE-ACCELERATED RENDER LOOP (USING TRANSLATE3D FOR ZERO LAG) ---
     const playerEl = document.getElementById('game-player-el');
-    playerEl.style.left = player.x + 'px';
-    playerEl.style.top = player.y + 'px';
+    playerEl.style.transform = `translate3d(${player.x}px, ${player.y}px, 0)`;
 
     platforms.forEach(plat => {
         if(plat.element) {
-            plat.element.style.top = plat.y + 'px';
-            plat.element.style.left = plat.x + 'px';
+            let renderX = plat.type === 'pastel' ? plat.x + Math.sin(Date.now() * 0.002 + plat.baseKey) * 60 : plat.x;
+            plat.element.style.transform = `translate3d(${renderX}px, ${plat.y}px, 0)`;
         }
     });
     
     items.forEach(item => {
         if(item.element) {
-            item.element.style.top = item.y + 'px';
-            item.element.style.left = item.x + 'px';
+            item.element.style.transform = `translate3d(${item.x}px, ${item.y}px, 0)`;
         }
     });
 
     stars.forEach(star => {
         if(star.element) {
-            star.element.style.top = star.y + 'px';
-            star.element.style.left = star.x + 'px';
+            star.element.style.transform = `translate3d(${star.x}px, ${star.y}px, 0)`;
         }
     });
 
@@ -633,4 +629,3 @@ function animateLogo() {
 ['mousemove', 'touchstart', 'click', 'scroll'].forEach(evt => {
     document.addEventListener(evt, resetScreensaver);
 });
-
