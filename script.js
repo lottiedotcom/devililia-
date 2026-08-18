@@ -316,7 +316,14 @@ function initGame() {
     
     for(let i = 1; i <= 3; i++) {
         let isPastel = Math.random() < 0.4;
-        platforms.push({ x: Math.random() * 120, y: 380 - (i * 75), type: isPastel ? 'pastel' : 'normal', baseKey: Math.random() * 100, element: null });
+        let platX = Math.random() * 120;
+        let platY = 380 - (i * 75);
+        platforms.push({ x: platX, y: platY, type: isPastel ? 'pastel' : 'normal', baseKey: Math.random() * 100, element: null });
+        
+        // Ensure starting stars load correctly too
+        if (Math.random() < 0.3) {
+            stars.push({ x: platX + 40, y: platY - 45, element: null });
+        }
     }
     renderGameObjects();
     
@@ -359,7 +366,6 @@ function updateGame() {
             let preciseCenter = player.x + (player.width / 2); 
             
             platforms.forEach(plat => {
-                // Smooth glide math for pastel clouds
                 if (plat.type === 'pastel') {
                     plat.currentX = plat.x + Math.sin(gameTime + plat.baseKey) * 60;
                 } else {
@@ -393,7 +399,7 @@ function updateGame() {
             }
         });
 
-        // --- STAR COLLISION ---
+        // --- STAR COLLISION (OUTFIT CHANGE) ---
         stars.forEach(star => {
             if (star.element &&
                 itemGrabCenter > star.x - 30 && itemGrabCenter < star.x + 75 &&
@@ -460,7 +466,7 @@ function updateGame() {
                 if (Math.random() < 0.15) {
                     items.push({ x: newPlatX + 80, y: newPlatY - 40, element: null });
                 }
-                if (Math.random() < 0.15) {
+                if (Math.random() < 0.25) {
                     stars.push({ x: newPlatX + 40, y: newPlatY - 45, element: null });
                 }
             }
@@ -503,7 +509,7 @@ function updateGame() {
         }
     }
 
-    // --- HARDWARE-ACCELERATED RENDER LOOP (USING TRANSLATE3D FOR ZERO LAG) ---
+    // --- HARDWARE-ACCELERATED RENDER LOOP ---
     const playerEl = document.getElementById('game-player-el');
     playerEl.style.transform = `translate3d(${player.x}px, ${player.y}px, 0)`;
 
@@ -629,3 +635,4 @@ function animateLogo() {
 ['mousemove', 'touchstart', 'click', 'scroll'].forEach(evt => {
     document.addEventListener(evt, resetScreensaver);
 });
+
