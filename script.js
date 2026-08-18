@@ -30,7 +30,7 @@ function playOutfitSound() {
 }
 
 document.addEventListener('click', (e) => {
-    const isClickable = e.target.closest('.icon, button, a, #start-btn, #clock, #user-avatar, .tab-btn');
+    const isClickable = e.target.closest('.icon, button, a, #start-btn, #clock, #user-avatar, .tab-btn, .xp-button');
     if (isClickable) {
         playClickSound();
     }
@@ -95,11 +95,22 @@ function loadBadgesToNotepad() {
         
         if (isUnlocked) {
             slot.addEventListener('click', () => {
-                alert(`${badgeData[i].title}\n\n${badgeData[i].quote}`);
+                showBadgeAlert(badgeData[i].title, badgeData[i].quote);
             });
         }
         grid.appendChild(slot);
     }
+}
+
+// Custom Modal Controls
+function showBadgeAlert(title, quote) {
+    document.getElementById('badge-alert-title').innerText = title;
+    document.getElementById('badge-alert-quote').innerText = quote;
+    document.getElementById('badge-alert-modal').classList.remove('hidden');
+}
+
+function closeBadgeAlert() {
+    document.getElementById('badge-alert-modal').classList.add('hidden');
 }
 
 // --- WINDOW MANAGEMENT ---
@@ -519,7 +530,7 @@ function updateGame() {
         }
     });
     
-    // Separated the items and stars to use .left and .top so CSS animations don't break!
+    // Items and stars use standard styling to let CSS handle their floating/spinning animations!
     items.forEach(item => {
         if(item.element) {
             item.element.style.left = `${item.x}px`;
