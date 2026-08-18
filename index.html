@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>devililia</title>
-    <!-- Links the manifest for app downloading -->
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -66,14 +65,29 @@
             </div>
         </div>
 
-        <!-- WINDOW: Interactive Notepad -->
+        <!-- WINDOW: Interactive Notepad with Tabs -->
         <div class="window hidden" id="window-notepad">
             <div class="title-bar drag-handle">
                 <span>untitled - notepad</span>
                 <button class="close-btn" onclick="closeWindow('window-notepad')">X</button>
             </div>
+            <!-- Notepad Tab Switcher -->
+            <div class="notepad-tabs">
+                <button class="tab-btn active-tab" onclick="switchTab('notes')">notes.txt</button>
+                <button class="tab-btn" onclick="switchTab('badges')">badges.txt</button>
+            </div>
             <div class="window-content no-padding">
-                <textarea class="notepad-area" placeholder="Type here..."></textarea>
+                <textarea id="notepad-notes-tab" class="notepad-area" placeholder="Type here..."></textarea>
+                <div id="notepad-badges-tab" class="hidden notepad-badges-container">
+                    <h3>✧ Unlockable Titles & Badges ✧</h3>
+                    <div id="badges-grid">
+                        <div class="badge-slot locked" id="badge-1"><img src="ms1.png" alt="Badge 1"><span class="badge-title">1. Starlight Novice</span></div>
+                        <div class="badge-slot locked" id="badge-2"><img src="ms2.png" alt="Badge 2"><span class="badge-title">2. Cloud Hopper</span></div>
+                        <div class="badge-slot locked" id="badge-3"><img src="ms3.png" alt="Badge 3"><span class="badge-title">3. Dream Wanderer</span></div>
+                        <div class="badge-slot locked" id="badge-4"><img src="ms4.png" alt="Badge 4"><span class="badge-title">4. Astral Sprite</span></div>
+                        <div class="badge-slot locked" id="badge-5"><img src="ms5.png" alt="Badge 5"><span class="badge-title">5. Celestial Queen</span></div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -91,6 +105,7 @@
                     </div>
                     
                     <div id="start-overlay" class="hidden">Tap to Start!</div>
+                    <div id="milestone-popup" class="hidden"></div>
                     
                     <div id="items-container"></div>
                     <div id="platforms-container"></div>
@@ -127,11 +142,11 @@
 
     <!-- Audio Files -->
     <audio id="ui-click-sound" src="ui.mp3" preload="auto"></audio>
+    <audio id="outfit-sound" src="d.mp3" preload="auto"></audio>
     <audio id="game-bgm" src="gg.m4a" loop preload="auto"></audio>
 
     <script src="script.js"></script>
     
-    <!-- Registers the Service Worker -->
     <script>
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js');
@@ -139,3 +154,4 @@
     </script>
 </body>
 </html>
+
