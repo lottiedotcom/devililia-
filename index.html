@@ -82,11 +82,11 @@
                 <div id="notepad-badges-tab" class="hidden notepad-badges-container">
                     <h3>✧ Unlockable Titles & Badges ✧</h3>
                     <div id="badges-grid">
-                        <div class="badge-slot locked" id="badge-1"><img src="ms1.png" alt="Badge 1"><span class="badge-title">1. Starlight Novice</span></div>
-                        <div class="badge-slot locked" id="badge-2"><img src="ms2.png" alt="Badge 2"><span class="badge-title">2. Cloud Hopper</span></div>
-                        <div class="badge-slot locked" id="badge-3"><img src="ms3.png" alt="Badge 3"><span class="badge-title">3. Dream Wanderer</span></div>
-                        <div class="badge-slot locked" id="badge-4"><img src="ms4.png" alt="Badge 4"><span class="badge-title">4. Astral Sprite</span></div>
-                        <div class="badge-slot locked" id="badge-5"><img src="ms5.png" alt="Badge 5"><span class="badge-title">5. Celestial Queen</span></div>
+                        <div class="badge-slot locked" id="badge-1"><img src="ms1.png" alt="Badge 1"><span class="badge-title">Starlight Novice</span></div>
+                        <div class="badge-slot locked" id="badge-2"><img src="ms2.png" alt="Badge 2"><span class="badge-title">Cloud Hopper</span></div>
+                        <div class="badge-slot locked" id="badge-3"><img src="ms3.png" alt="Badge 3"><span class="badge-title">Dream Wanderer</span></div>
+                        <div class="badge-slot locked" id="badge-4"><img src="ms4.png" alt="Badge 4"><span class="badge-title">Astral Sprite</span></div>
+                        <div class="badge-slot locked" id="badge-5"><img src="ms5.png" alt="Badge 5"><span class="badge-title">Celestial Queen</span></div>
                     </div>
                 </div>
             </div>
@@ -142,6 +142,8 @@
                     <button class="close-btn" onclick="closeBadgeAlert()">X</button>
                 </div>
                 <div class="window-content center-content" style="text-align: center; padding: 20px;">
+                    <!-- Added the image here! -->
+                    <img id="badge-alert-img" src="" alt="Badge" style="width: 70px; height: 70px; margin-bottom: 10px; object-fit: contain;">
                     <h3 id="badge-alert-title" style="color: #8b008b; margin-bottom: 10px; font-size: 16px;"></h3>
                     <p id="badge-alert-quote" style="font-size: 14px; font-style: italic; color: #555; margin-bottom: 20px; line-height: 1.4;"></p>
                     <button class="xp-button" onclick="closeBadgeAlert()">OK</button>
@@ -171,4 +173,3 @@
     </script>
 </body>
 </html>
-
