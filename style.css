@@ -5,7 +5,7 @@ body, html {
     height: 100%; 
     height: 100dvh; 
     overflow: hidden; 
-    background-color: #dda0dd; /* Plum base */
+    background-color: #dda0dd; 
     touch-action: manipulation; 
 }
 .hidden { display: none !important; }
@@ -24,7 +24,7 @@ body, html {
 }
 .login-box {
     display: flex; align-items: center; gap: 15px; z-index: 2;
-    background: #add8e6; /* Light Blue */
+    background: #add8e6; 
     padding: 20px; border-radius: 10px; border: 2px solid #ffffff;
     box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
 }
@@ -63,7 +63,7 @@ body, html {
     left: 0; 
     width: 100%; 
     height: 35px;
-    background: linear-gradient(to bottom, #add8e6 0%, #d4f1f9 9%, #add8e6 18%, #add8e6 92%, #87cefa 100%); /* Light Blue Gradient */
+    background: linear-gradient(to bottom, #add8e6 0%, #d4f1f9 9%, #add8e6 18%, #add8e6 92%, #87cefa 100%);
     display: flex; justify-content: space-between; align-items: center; 
     z-index: 9000;
 }
@@ -123,10 +123,73 @@ body, html {
 .window-content { padding: 10px; overflow-y: auto; flex: 1; min-height: 250px; background: white; border: 1px solid #add8e6; margin: 2px; }
 .no-padding { padding: 0; }
 
-/* Interactive Notepad Area */
+/* Notepad Tabs */
+.notepad-tabs {
+    display: flex;
+    background: #e6f2ff;
+    border-bottom: 1px solid #add8e6;
+    padding: 4px 4px 0 4px;
+    gap: 2px;
+}
+.tab-btn {
+    background: #cce0ff;
+    border: 1px solid #add8e6;
+    border-bottom: none;
+    padding: 4px 12px;
+    font-size: 12px;
+    cursor: pointer;
+    border-radius: 4px 4px 0 0;
+    color: #333;
+}
+.tab-btn.active-tab {
+    background: white;
+    font-weight: bold;
+    color: #4a75a0;
+}
 .notepad-area {
     width: 100%; height: 100%; border: none; outline: none; resize: none;
     font-family: 'Lucida Console', Courier, monospace; font-size: 14px; padding: 10px;
+}
+.notepad-badges-container {
+    padding: 15px;
+    text-align: center;
+    background: #fff;
+    height: 100%;
+    overflow-y: auto;
+}
+.notepad-badges-container h3 {
+    font-size: 14px;
+    color: #8b008b;
+    margin-bottom: 15px;
+}
+#badges-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: 10px;
+}
+.badge-slot {
+    background: #f9f9f9;
+    border: 1px dashed #add8e6;
+    border-radius: 6px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+.badge-slot.locked img {
+    filter: grayscale(100%) brightness(50%);
+    opacity: 0.3;
+}
+.badge-slot img {
+    width: 45px;
+    height: 45px;
+    object-fit: contain;
+}
+.badge-title {
+    font-size: 10px;
+    color: #555;
+    text-align: center;
 }
 
 /* Center Content & Errors */
@@ -138,7 +201,7 @@ body, html {
     cursor: pointer; font-family: 'Tahoma', sans-serif; font-size: 12px; color: #333;
 }
 
-/* --- VERTICAL PLATFORMER STYLES --- */
+/* --- VERTICAL PLATFORMER MINI GAME --- */
 #game-container {
     width: 100%;
     height: 100%;
@@ -183,18 +246,54 @@ body, html {
 }
 @keyframes pulse { from { opacity: 0.6; transform: scale(0.95); } to { opacity: 1; transform: scale(1.05); } }
 
+/* Milestone Popup Notification */
+#milestone-popup {
+    position: absolute;
+    top: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(221, 160, 221, 0.95);
+    border: 2px solid white;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: bold;
+    text-align: center;
+    z-index: 30;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    animation: popupAnim 3s ease-in-out forwards;
+}
+@keyframes popupAnim {
+    0% { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+    15% { opacity: 1; transform: translateX(-50%) translateY(0); }
+    85% { opacity: 1; transform: translateX(-50%) translateY(0); }
+    100% { opacity: 0; transform: translateX(-50%) translateY(-10px); display: none; }
+}
+
 .game-player {
     position: absolute; 
     width: 180px; 
     height: 220px; 
-    background: url('gc.png') no-repeat center bottom; 
-    background-size: contain; z-index: 5;
+    background-size: contain; 
+    background-repeat: no-repeat;
+    background-position: center bottom;
+    z-index: 5;
 }
 .game-platform {
     position: absolute; 
     width: 200px; 
     height: 50px; 
     background: url('cloud.png') no-repeat center center;
+    background-size: contain; z-index: 4;
+    transition: transform 0.1s ease-out;
+}
+/* New Pastel Moving Cloud */
+.pastel-platform {
+    position: absolute; 
+    width: 200px; 
+    height: 50px; 
+    background: url('pastel.png') no-repeat center center;
     background-size: contain; z-index: 4;
     transition: transform 0.1s ease-out;
 }
@@ -211,11 +310,27 @@ body, html {
     z-index: 6;
     animation: floatItem 1s infinite alternate ease-in-out;
 }
+/* Color-changing Star Item */
+.star-item {
+    position: absolute;
+    width: 45px;
+    height: 45px;
+    background: url('sto.png') no-repeat center center;
+    background-size: contain;
+    z-index: 6;
+    animation: spinStar 2s infinite linear;
+}
 @keyframes floatItem {
     from { transform: translateY(0px) scale(0.95); }
     to { transform: translateY(-8px) scale(1.05); }
+}
+@keyframes spinStar {
+    0% { transform: rotate(0deg) scale(0.95); }
+    50% { transform: rotate(180deg) scale(1.05); }
+    100% { transform: rotate(360deg) scale(0.95); }
 }
 
 /* Screensaver */
 #screensaver { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: black; z-index: 2000; overflow: hidden; }
 #bounce-logo { position: absolute; width: 80px; }
+
