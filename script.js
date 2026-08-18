@@ -320,7 +320,6 @@ function initGame() {
         let platY = 380 - (i * 75);
         platforms.push({ x: platX, y: platY, type: isPastel ? 'pastel' : 'normal', baseKey: Math.random() * 100, element: null });
         
-        // Ensure starting stars load correctly too
         if (Math.random() < 0.3) {
             stars.push({ x: platX + 40, y: platY - 45, element: null });
         }
@@ -575,6 +574,7 @@ function renderGameObjects() {
         }
     });
 
+    // FIXED: Correctly appends and initializes stars into the item container!
     stars.forEach(star => {
         if(!star.element) {
             let el = document.createElement('div');
