@@ -54,7 +54,15 @@ loginBtn.addEventListener('click', () => {
     }
 });
 
-// --- NOTEPAD TABS LOGIC ---
+// --- NOTEPAD TABS & BADGES INFO LOGIC ---
+const badgeData = {
+    1: { title: "1. Starlight Novice", quote: "“Even the smallest spark can light up an endless abyss.” ✧" },
+    2: { title: "2. Cloud Hopper", quote: "“Keep looking up, the softest clouds are just ahead.” ☁️" },
+    3: { title: "3. Dream Wanderer", quote: "“Lost in a haze of plum and light blue memories.” 𓆩ꨄ︎𓆪" },
+    4: { title: "4. Astral Sprite", quote: "“Dancing between dimensions where gravity doesn't apply.” ✨" },
+    5: { title: "5. Celestial Queen", quote: "“The entire sky bows to your endless high score.” 👑" }
+};
+
 function switchTab(tabName) {
     const notesTab = document.getElementById('notepad-notes-tab');
     const badgesTab = document.getElementById('notepad-badges-tab');
@@ -76,13 +84,21 @@ function switchTab(tabName) {
 
 function loadBadgesToNotepad() {
     let unlockedBadges = JSON.parse(localStorage.getItem('devililiaUnlockedBadges')) || [];
+    const grid = document.getElementById('badges-grid');
+    grid.innerHTML = '';
+
     for (let i = 1; i <= 5; i++) {
-        const badgeSlot = document.getElementById(`badge-${i}`);
-        if (unlockedBadges.includes(i)) {
-            badgeSlot.classList.remove('locked');
-        } else {
-            badgeSlot.classList.add('locked');
+        let isUnlocked = unlockedBadges.includes(i);
+        let slot = document.createElement('div');
+        slot.className = isUnlocked ? 'badge-slot' : 'badge-slot locked';
+        slot.innerHTML = `<img src="ms${i}.png" alt="Badge ${i}"><span class="badge-title">${badgeData[i].title}</span>`;
+        
+        if (isUnlocked) {
+            slot.addEventListener('click', () => {
+                alert(`${badgeData[i].title}\n\n${badgeData[i].quote}`);
+            });
         }
+        grid.appendChild(slot);
     }
 }
 
@@ -229,7 +245,7 @@ let gameLoop;
 let player = { x: 70, y: 160, width: 180, height: 220, vy: 0, outfit: 'gc.png' };
 let platforms = [];
 let items = [];
-let stars = []; // Color-changing stars array
+let stars = [];
 let gravity = 0.09; 
 let jumpPower = -3.9; 
 let score = 0;
@@ -239,12 +255,20 @@ let gameStarted = false;
 let mouseX = 160;
 
 const outfitsList = ['gc.png', 'black.png', 'blue.png', 'pink.png'];
+
+// PRE-LOAD OUTFIT IMAGES TO PREVENT SEAMLESS FLASHING/LAG!
+outfitsList.forEach(src => {
+    const img = new Image();
+    img.src = src;
+});
+
+// HARDER MILESTONE SCORE REQUIREMENTS
 const milestones = [
-    { score: 500, id: 1, title: "Badge Unlocked: Starlight Novice!" },
-    { score: 1500, id: 2, title: "Badge Unlocked: Cloud Hopper!" },
-    { score: 3000, id: 3, title: "Badge Unlocked: Dream Wanderer!" },
-    { score: 5500, id: 4, title: "Badge Unlocked: Astral Sprite!" },
-    { score: 10000, id: 5, title: "Badge Unlocked: Celestial Queen!" }
+    { score: 2500, id: 1, title: "Badge Unlocked: Starlight Novice!" },
+    { score: 7500, id: 2, title: "Badge Unlocked: Cloud Hopper!" },
+    { score: 15000, id: 3, title: "Badge Unlocked: Dream Wanderer!" },
+    { score: 30000, id: 4, title: "Badge Unlocked: Astral Sprite!" },
+    { score: 60000, id: 5, title: "Badge Unlocked: Celestial Queen!" }
 ];
 
 const gameContainer = document.getElementById('game-container');
@@ -294,7 +318,7 @@ function initGame() {
     
     for(let i = 1; i <= 3; i++) {
         let isPastel = Math.random() < 0.4;
-        platforms.push({ x: Math.random() * 120, y: 380 - (i * 75), type: isPastel ? 'pastel' : 'normal', element: null });
+        platforms.push({ x: Math.random() * 120, y: 380 - (i * 75), type: isPastel ? 'pastel' : 'normal', baseKey: Math.random() * 100, element: null });
     }
     renderGameObjects();
     
@@ -332,14 +356,14 @@ function updateGame() {
         }
 
         // --- PLATFORM COLLISION ---
+        let gameTime = Date.now() * 0.003; // Smooth time factor for floating motion
         if (player.vy > 0) {
             let preciseCenter = player.x + (player.width / 2); 
             
             platforms.forEach(plat => {
-                // Move pastel platforms horizontally
+                // Smooth sinusoidal wave motion for pastel clouds gliding back and forth
                 if (plat.type === 'pastel') {
-                    plat.x += plat.dir * 0.8;
-                    if (plat.x < 0 || plat.x > 120) plat.dir *= -1;
+                    plat.x = 60 + Math.sin(gameTime + plat.baseKey) * 60;
                 }
 
                 if(preciseCenter > plat.x + 30 && preciseCenter < plat.x + 170 &&
@@ -375,11 +399,10 @@ function updateGame() {
                 itemGrabCenter > star.x - 30 && itemGrabCenter < star.x + 75 &&
                 player.y + player.height > star.y && player.y < star.y + 45) {
                 
-                // Pick a random outfit different from current one
                 let availableOutfits = outfitsList.filter(o => o !== player.outfit);
                 player.outfit = availableOutfits[Math.floor(Math.random() * availableOutfits.length)];
                 updatePlayerSprite();
-                playOutfitSound(); // Play d.mp3 chime
+                playOutfitSound(); 
 
                 star.element.remove();
                 star.element = null;
@@ -433,12 +456,11 @@ function updateGame() {
                 let newPlatY = lastY - (Math.random() * 15 + 70); 
                 let isPastel = Math.random() < 0.4;
                 
-                platforms.push({ x: newPlatX, y: newPlatY, type: isPastel ? 'pastel' : 'normal', dir: 1, element: null });
+                platforms.push({ x: newPlatX, y: newPlatY, type: isPastel ? 'pastel' : 'normal', baseKey: Math.random() * 100, element: null });
                 
                 if (Math.random() < 0.15) {
                     items.push({ x: newPlatX + 80, y: newPlatY - 40, element: null });
                 }
-                // 15% Chance to spawn a color-changing star
                 if (Math.random() < 0.15) {
                     stars.push({ x: newPlatX + 40, y: newPlatY - 45, element: null });
                 }
@@ -527,7 +549,6 @@ function triggerMilestonePopup(text) {
     const popup = document.getElementById('milestone-popup');
     popup.innerText = text;
     popup.classList.remove('hidden');
-    // Restart animation trick
     void popup.offsetWidth;
 }
 
@@ -537,7 +558,6 @@ function renderGameObjects() {
         if(!plat.element) {
             let el = document.createElement('div');
             el.className = plat.type === 'pastel' ? 'pastel-platform' : 'game-platform';
-            plat.dir = 1;
             platContainer.appendChild(el);
             plat.element = el;
         }
