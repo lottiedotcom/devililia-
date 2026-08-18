@@ -1,10 +1,10 @@
 {
-  "name": "Jump Game OS",
-  "short_name": "Jump OS",
+  "name": "devililia",
+  "short_name": "devililia",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#ffd1dc",
-  "theme_color": "#ff99cc",
+  "background_color": "#dda0dd",
+  "theme_color": "#add8e6",
   "icons": [
     {
       "src": "pfp.png",
