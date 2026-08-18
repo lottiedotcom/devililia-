@@ -2,7 +2,6 @@
 const CORRECT_PASSWORD = "dream"; 
 const PASSWORD_HINT = "psst... the password is 'dream'";
 
-// Liminal Error Messages
 const liminalMessages = [
     "You have been here before.",
     "There is nothing left to click.",
@@ -14,6 +13,7 @@ const liminalMessages = [
 
 // --- SOUND EFFECT LOGIC ---
 const clickAudio = document.getElementById('ui-click-sound');
+const outfitAudio = document.getElementById('outfit-sound');
 
 function playClickSound() {
     if (clickAudio) {
@@ -22,8 +22,15 @@ function playClickSound() {
     }
 }
 
+function playOutfitSound() {
+    if (outfitAudio) {
+        outfitAudio.currentTime = 0;
+        outfitAudio.play().catch(e => {});
+    }
+}
+
 document.addEventListener('click', (e) => {
-    const isClickable = e.target.closest('.icon, button, a, #start-btn, #clock, #user-avatar');
+    const isClickable = e.target.closest('.icon, button, a, #start-btn, #clock, #user-avatar, .tab-btn');
     if (isClickable) {
         playClickSound();
     }
@@ -47,7 +54,39 @@ loginBtn.addEventListener('click', () => {
     }
 });
 
-// --- WINDOW MANAGEMENT & RAPID CLICKS ---
+// --- NOTEPAD TABS LOGIC ---
+function switchTab(tabName) {
+    const notesTab = document.getElementById('notepad-notes-tab');
+    const badgesTab = document.getElementById('notepad-badges-tab');
+    const tabBtns = document.querySelectorAll('.tab-btn');
+
+    tabBtns.forEach(btn => btn.classList.remove('active-tab'));
+
+    if (tabName === 'notes') {
+        notesTab.classList.remove('hidden');
+        badgesTab.classList.add('hidden');
+        event.target.classList.add('active-tab');
+    } else {
+        notesTab.classList.add('hidden');
+        badgesTab.classList.remove('hidden');
+        event.target.classList.add('active-tab');
+        loadBadgesToNotepad();
+    }
+}
+
+function loadBadgesToNotepad() {
+    let unlockedBadges = JSON.parse(localStorage.getItem('devililiaUnlockedBadges')) || [];
+    for (let i = 1; i <= 5; i++) {
+        const badgeSlot = document.getElementById(`badge-${i}`);
+        if (unlockedBadges.includes(i)) {
+            badgeSlot.classList.remove('locked');
+        } else {
+            badgeSlot.classList.add('locked');
+        }
+    }
+}
+
+// --- WINDOW MANAGEMENT ---
 let clickCount = 0;
 let clickTimer = null;
 const gameBGM = document.getElementById('game-bgm');
@@ -187,9 +226,10 @@ document.getElementById('clock').innerText = updateClock();
 
 // --- VERTICAL PLATFORMER MINI GAME ---
 let gameLoop;
-let player = { x: 70, y: 160, width: 180, height: 220, vy: 0 };
+let player = { x: 70, y: 160, width: 180, height: 220, vy: 0, outfit: 'gc.png' };
 let platforms = [];
 let items = [];
+let stars = []; // Color-changing stars array
 let gravity = 0.09; 
 let jumpPower = -3.9; 
 let score = 0;
@@ -197,6 +237,15 @@ let lives = 3;
 let gameActive = false;
 let gameStarted = false; 
 let mouseX = 160;
+
+const outfitsList = ['gc.png', 'black.png', 'blue.png', 'pink.png'];
+const milestones = [
+    { score: 500, id: 1, title: "Badge Unlocked: Starlight Novice!" },
+    { score: 1500, id: 2, title: "Badge Unlocked: Cloud Hopper!" },
+    { score: 3000, id: 3, title: "Badge Unlocked: Dream Wanderer!" },
+    { score: 5500, id: 4, title: "Badge Unlocked: Astral Sprite!" },
+    { score: 10000, id: 5, title: "Badge Unlocked: Celestial Queen!" }
+];
 
 const gameContainer = document.getElementById('game-container');
 
@@ -223,24 +272,29 @@ gameContainer.addEventListener('touchmove', (e) => {
 function initGame() {
     platforms.forEach(p => { if(p.element) p.element.remove(); });
     items.forEach(i => { if(i.element) i.element.remove(); });
+    stars.forEach(s => { if(s.element) s.element.remove(); });
     platforms = [];
     items = [];
+    stars = [];
     score = 0;
     lives = 3;
+    player.outfit = 'gc.png';
     
     player.y = 160; 
     player.x = 70;
     player.vy = 0;
     
+    updatePlayerSprite();
     updateHearts();
     document.getElementById('score-display').innerText = `Score: ${score}`;
     document.getElementById('game-over-screen').classList.add('hidden');
     document.getElementById('start-overlay').classList.remove('hidden');
 
-    platforms.push({ x: 60, y: 380, element: null }); 
+    platforms.push({ x: 60, y: 380, type: 'normal', element: null }); 
     
     for(let i = 1; i <= 3; i++) {
-        platforms.push({ x: Math.random() * 120, y: 380 - (i * 75), element: null });
+        let isPastel = Math.random() < 0.4;
+        platforms.push({ x: Math.random() * 120, y: 380 - (i * 75), type: isPastel ? 'pastel' : 'normal', element: null });
     }
     renderGameObjects();
     
@@ -248,6 +302,11 @@ function initGame() {
     gameStarted = false; 
     cancelAnimationFrame(gameLoop);
     updateGame();
+}
+
+function updatePlayerSprite() {
+    const playerEl = document.getElementById('game-player-el');
+    playerEl.style.backgroundImage = `url('${player.outfit}')`;
 }
 
 function updateGame() {
@@ -277,6 +336,12 @@ function updateGame() {
             let preciseCenter = player.x + (player.width / 2); 
             
             platforms.forEach(plat => {
+                // Move pastel platforms horizontally
+                if (plat.type === 'pastel') {
+                    plat.x += plat.dir * 0.8;
+                    if (plat.x < 0 || plat.x > 120) plat.dir *= -1;
+                }
+
                 if(preciseCenter > plat.x + 30 && preciseCenter < plat.x + 170 &&
                    player.y + player.height > plat.y + 10 && 
                    player.y + player.height < plat.y + 30 + player.vy) {
@@ -289,7 +354,7 @@ function updateGame() {
             });
         }
         
-        // --- ITEM COLLISION ---
+        // --- ITEM COLLISION (SUPER JUMP) ---
         let itemGrabCenter = player.x + (player.width / 2);
         items.forEach(item => {
             if (item.element && 
@@ -304,6 +369,26 @@ function updateGame() {
             }
         });
 
+        // --- STAR COLLISION (OUTFIT CHANGE) ---
+        stars.forEach(star => {
+            if (star.element &&
+                itemGrabCenter > star.x - 30 && itemGrabCenter < star.x + 75 &&
+                player.y + player.height > star.y && player.y < star.y + 45) {
+                
+                // Pick a random outfit different from current one
+                let availableOutfits = outfitsList.filter(o => o !== player.outfit);
+                player.outfit = availableOutfits[Math.floor(Math.random() * availableOutfits.length)];
+                updatePlayerSprite();
+                playOutfitSound(); // Play d.mp3 chime
+
+                star.element.remove();
+                star.element = null;
+            }
+        });
+
+        // --- CHECK MILESTONES ---
+        checkMilestones(score);
+
         // --- CAMERA SCROLLING ---
         if (player.y < 150) {
             let diff = 150 - player.y;
@@ -313,6 +398,7 @@ function updateGame() {
             
             platforms.forEach(plat => plat.y += diff);
             items.forEach(item => item.y += diff);
+            stars.forEach(star => star.y += diff);
 
             platforms = platforms.filter(plat => {
                 if(plat.y > 420) {
@@ -331,16 +417,30 @@ function updateGame() {
                 return true;
             });
 
+            stars = stars.filter(star => {
+                if (!star.element) return false;
+                if(star.y > 420) {
+                    star.element.remove();
+                    return false;
+                }
+                return true;
+            });
+
             while(platforms.length < 4) {
                 let lastY = platforms[platforms.length-1]?.y || 0;
                 
                 let newPlatX = Math.random() * 120;
                 let newPlatY = lastY - (Math.random() * 15 + 70); 
+                let isPastel = Math.random() < 0.4;
                 
-                platforms.push({ x: newPlatX, y: newPlatY, element: null });
+                platforms.push({ x: newPlatX, y: newPlatY, type: isPastel ? 'pastel' : 'normal', dir: 1, element: null });
                 
                 if (Math.random() < 0.15) {
                     items.push({ x: newPlatX + 80, y: newPlatY - 40, element: null });
+                }
+                // 15% Chance to spawn a color-changing star
+                if (Math.random() < 0.15) {
+                    stars.push({ x: newPlatX + 40, y: newPlatY - 45, element: null });
                 }
             }
             renderGameObjects();
@@ -357,7 +457,7 @@ function updateGame() {
                 
                 player.y = 160;
                 player.vy = 0;
-                platforms.push({ x: player.x - 10, y: 380, element: null });
+                platforms.push({ x: player.x - 10, y: 380, type: 'normal', element: null });
                 renderGameObjects();
             } else {
                 gameActive = false;
@@ -401,7 +501,34 @@ function updateGame() {
         }
     });
 
+    stars.forEach(star => {
+        if(star.element) {
+            star.element.style.top = star.y + 'px';
+            star.element.style.left = star.x + 'px';
+        }
+    });
+
     gameLoop = requestAnimationFrame(updateGame);
+}
+
+function checkMilestones(currentScore) {
+    let unlockedBadges = JSON.parse(localStorage.getItem('devililiaUnlockedBadges')) || [];
+    
+    milestones.forEach(m => {
+        if (currentScore >= m.score && !unlockedBadges.includes(m.id)) {
+            unlockedBadges.push(m.id);
+            localStorage.setItem('devililiaUnlockedBadges', JSON.stringify(unlockedBadges));
+            triggerMilestonePopup(m.title);
+        }
+    });
+}
+
+function triggerMilestonePopup(text) {
+    const popup = document.getElementById('milestone-popup');
+    popup.innerText = text;
+    popup.classList.remove('hidden');
+    // Restart animation trick
+    void popup.offsetWidth;
 }
 
 function renderGameObjects() {
@@ -409,7 +536,8 @@ function renderGameObjects() {
     platforms.forEach(plat => {
         if(!plat.element) {
             let el = document.createElement('div');
-            el.className = 'game-platform';
+            el.className = plat.type === 'pastel' ? 'pastel-platform' : 'game-platform';
+            plat.dir = 1;
             platContainer.appendChild(el);
             plat.element = el;
         }
@@ -422,6 +550,15 @@ function renderGameObjects() {
             el.className = 'game-item';
             itemContainer.appendChild(el);
             item.element = el;
+        }
+    });
+
+    stars.forEach(star => {
+        if(!star.element) {
+            let el = document.createElement('div');
+            el.className = 'star-item';
+            itemContainer.appendChild(el);
+            star.element = el;
         }
     });
 }
@@ -476,3 +613,4 @@ function animateLogo() {
 ['mousemove', 'touchstart', 'click', 'scroll'].forEach(evt => {
     document.addEventListener(evt, resetScreensaver);
 });
+
