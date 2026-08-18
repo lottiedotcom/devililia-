@@ -176,6 +176,15 @@ body, html {
     flex-direction: column;
     align-items: center;
     gap: 5px;
+    transition: transform 0.1s;
+}
+.badge-slot:not(.locked) {
+    cursor: pointer;
+    background: #f0f8ff;
+    border-color: #87cefa;
+}
+.badge-slot:not(.locked):hover {
+    transform: scale(1.05);
 }
 .badge-slot.locked img {
     filter: grayscale(100%) brightness(50%);
@@ -288,7 +297,6 @@ body, html {
     background-size: contain; z-index: 4;
     transition: transform 0.1s ease-out;
 }
-/* New Pastel Moving Cloud */
 .pastel-platform {
     position: absolute; 
     width: 200px; 
@@ -310,7 +318,6 @@ body, html {
     z-index: 6;
     animation: floatItem 1s infinite alternate ease-in-out;
 }
-/* Color-changing Star Item */
 .star-item {
     position: absolute;
     width: 45px;
