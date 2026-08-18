@@ -1,0 +1,10 @@
+{
+  "name": "jump-game-os",
+  "version": "1.0.0",
+  "description": "A cutecore Windows desktop jumping game.",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve ."
+  },
+  "dependencies": {}
+}
