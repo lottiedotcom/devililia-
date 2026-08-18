@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>devililia</title>
+    <!-- Links the manifest for app downloading -->
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -132,6 +133,21 @@
                 <button class="xp-button" onclick="closeWindow('error-message')">OK</button>
             </div>
         </div>
+        
+        <!-- Custom Badge Alert Modal -->
+        <div id="badge-alert-modal" class="hidden">
+            <div class="window custom-alert">
+                <div class="title-bar drag-handle">
+                    <span>devililia says...</span>
+                    <button class="close-btn" onclick="closeBadgeAlert()">X</button>
+                </div>
+                <div class="window-content center-content" style="text-align: center; padding: 20px;">
+                    <h3 id="badge-alert-title" style="color: #8b008b; margin-bottom: 10px; font-size: 16px;"></h3>
+                    <p id="badge-alert-quote" style="font-size: 14px; font-style: italic; color: #555; margin-bottom: 20px; line-height: 1.4;"></p>
+                    <button class="xp-button" onclick="closeBadgeAlert()">OK</button>
+                </div>
+            </div>
+        </div>
 
     </div>
 
@@ -147,6 +163,7 @@
 
     <script src="script.js"></script>
     
+    <!-- Registers the Service Worker -->
     <script>
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js');
