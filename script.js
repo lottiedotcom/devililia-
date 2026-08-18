@@ -519,15 +519,18 @@ function updateGame() {
         }
     });
     
+    // Separated the items and stars to use .left and .top so CSS animations don't break!
     items.forEach(item => {
         if(item.element) {
-            item.element.style.transform = `translate3d(${item.x}px, ${item.y}px, 0)`;
+            item.element.style.left = `${item.x}px`;
+            item.element.style.top = `${item.y}px`;
         }
     });
 
     stars.forEach(star => {
         if(star.element) {
-            star.element.style.transform = `translate3d(${star.x}px, ${star.y}px, 0)`;
+            star.element.style.left = `${star.x}px`;
+            star.element.style.top = `${star.y}px`;
         }
     });
 
@@ -574,7 +577,6 @@ function renderGameObjects() {
         }
     });
 
-    // FIXED: Correctly appends and initializes stars into the item container!
     stars.forEach(star => {
         if(!star.element) {
             let el = document.createElement('div');
